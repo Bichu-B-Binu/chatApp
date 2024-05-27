@@ -1,3 +1,20 @@
+@mixin mobile {
+  @media screen and (max-width: 480px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media screen and (max-width: 768px) {
+    @content;
+  }
+}
+
+@mixin laptop {
+  @media screen and (max-width: 1200px) {
+    @content;
+  }
+}
 .formContainer {
   background-color: #7adaa0;
   height: 100vh;
@@ -45,6 +62,7 @@
         font-weight: bold;
         border: none;
         cursor: pointer;
+        border-radius: 2px;
       }
       label {
         display: flex;
@@ -77,9 +95,14 @@
     display: flex;
     overflow: hidden;
 
+    @include tablet {
+      width: 90%;
+    }
+
     .sidebar {
       flex: 1;
       background-color: #cfeddb;
+      position: relative;
 
       .navbar {
         display: flex;
@@ -92,6 +115,9 @@
 
         .logo {
           font-weight: bold;
+          @include tablet {
+            display: none;
+          }
         }
 
         .user {
@@ -113,6 +139,10 @@
             border: none;
             cursor: pointer;
             border-radius: 2px;
+            @include tablet {
+              position: absolute;
+              bottom: 10px;
+            }
           }
         }
       }
@@ -148,10 +178,133 @@
           border-radius: 50%;
           object-fit: cover;
         }
+        .userChatInfo {
+          span {
+            font-size: 18px;
+            font-weight: 500;
+          }
+          p {
+            font-size: 14px;
+            color: gray;
+          }
+        }
       }
     }
     .chat {
       flex: 2;
+
+      .chatInfo {
+        height: 50px;
+        background-color: #55c481;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        color: #ddddf7;
+      }
+      .chatIcons {
+        display: flex;
+        gap: 10px;
+
+        .icon {
+          // height: 24px;
+          cursor: pointer;
+        }
+      }
+
+      .messages {
+        background-color: #ddf7e9;
+        padding: 10px;
+        height: calc(100% - 160px);
+        overflow: scroll;
+
+        .message {
+          display: flex;
+          gap: 20px;
+          margin-bottom: 20px;
+
+          .messageInfo {
+            display: flex;
+            flex-direction: column;
+            color: gray;
+            font-weight: 300;
+            img {
+              width: 40px;
+              height: 40px;
+              border-radius: 50%;
+              object-fit: cover;
+            }
+          }
+
+          .messageContant {
+            max-width: 80%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            p {
+              background-color: white;
+              padding: 10px 20px;
+              border-radius: 0px 10px 10px 10px;
+              max-width: max-content;
+            }
+
+            img {
+              width: 50%;
+            }
+          }
+          &.owner {
+            flex-direction: row-reverse;
+            .messageContant {
+              align-items: flex-end;
+            }
+
+            p {
+              background-color: #7adaa0;
+              color: white;
+              border-radius: 10px 0px 10px 10px;
+            }
+          }
+        }
+      }
+
+      .input {
+        height: 50px;
+        background-color: white;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        input {
+          width: 100%;
+          border: none;
+          outline: none;
+          color: #344d3e;
+          font-size: 18px;
+
+          &::placeholder {
+            color: lightgray;
+          }
+        }
+        .send {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+
+          .sendIcon {
+            cursor: pointer;
+          }
+          button {
+            border: none;
+            padding: 10px 15px;
+            color: white;
+            background-color: #55c481;
+            cursor: pointer;
+            border-radius: 2px;
+          }
+        }
+      }
     }
   }
 }
