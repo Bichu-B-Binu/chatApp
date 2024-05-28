@@ -1,13 +1,9 @@
 import { MdInsertPhoto } from "react-icons/md";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth, storage } from "../firebase";
+import { auth, db, storage } from "../firebase";
+import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const Register = () => {
   const [err, setErr] = useState(false);
@@ -26,7 +22,8 @@ const Register = () => {
       const uploadTask = uploadBytesResumable(storageRef, file);
 
       uploadTask.on(
-        (err) => {
+        // eslint-disable-next-line no-unused-vars
+        (error) => {
           setErr(true);
         },
         () => {
@@ -35,6 +32,15 @@ const Register = () => {
               displayName,
               photoURL: downloadURL,
             });
+
+            await setDoc(doc(db, "users", res.user.uid), {
+              uid: res.user.uid,
+              displayName,
+              email,
+              // eslint-disable-next-line no-undef
+              photoURL,
+            });
+            // console.log(downloadURL);
           });
         }
       );
