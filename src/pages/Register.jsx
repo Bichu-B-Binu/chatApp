@@ -4,10 +4,15 @@ import { auth, db, storage } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+// import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [err, setErr] = useState(false);
+  const [loading, setLoading] = useState(false);
+  // const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     // console.log(e);
     const displayName = e.target[0].value;
@@ -16,36 +21,39 @@ const Register = () => {
     const file = e.target[3].files[0];
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password);
+      const date = new Date().getTime();
 
-      const storageRef = ref(storage, displayName);
+      const storageRef = ref(storage, `${displayName + date}`);
 
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on(
-        // eslint-disable-next-line no-unused-vars
-        (error) => {
-          setErr(true);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+      await uploadBytesResumable(storageRef, file).then(() => {
+        getDownloadURL(storageRef).then(async (downloadURL) => {
+          try {
+            //Update profile
             await updateProfile(res.user, {
               displayName,
               photoURL: downloadURL,
             });
 
+            //create user on firestore
             await setDoc(doc(db, "users", res.user.uid), {
               uid: res.user.uid,
               displayName,
               email,
-              // eslint-disable-next-line no-undef
-              photoURL,
+              photoURL: downloadURL,
             });
-            // console.log(downloadURL);
-          });
-        }
-      );
+            //create empty user chats on firestore
+            await setDoc(doc(db, "userChats", res.user.uid), {});
+            // navigate("/");
+          } catch (err) {
+            console.log(err);
+            setErr(true);
+            setLoading(false);
+          }
+        });
+      });
     } catch (err) {
       setErr(true);
+      setLoading(false);
     }
   };
   return (
@@ -62,10 +70,14 @@ const Register = () => {
             <MdInsertPhoto />
             <span>Add an avatar</span>
           </label>
-          <button>Sign Up</button>
+          <button disabled={loading}>Sign Up</button>
+          {loading && "Uploading and compressing the image please wait..."}
           {err && <span>Somthing went wrong</span>}
         </form>
-        <p>You do have an account? Login</p>
+        <p>
+          You do have an account?
+          {/* <Link to="/register">Login</Link> */}
+        </p>
       </div>
     </div>
   );
