@@ -7,6 +7,8 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 // import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
+  const [num, setNum] = useState(0);
+
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
   // const navigate = useNavigate();
@@ -58,6 +60,8 @@ const Register = () => {
   };
   return (
     <div className="formContainer">
+      <p>{num}</p>
+      <button onClick={() => setNum(num + 1)}>press</button>
       <div className="formWrapper">
         <span className="logo">Chat App</span>
         <span className="title">Register</span>
